@@ -2,7 +2,8 @@ const Tutor = require('../models/Tutor');
 const crypto = require('crypto');
 const path = require('path');
 
-const sendTokenResponse = (user, statusCode, res) => {
+const sendTokenResponse = (tutor, statusCode, res) => {
+    console.log(`SEND TOKEN RESPONSE`)
     const token = tutor.getSignedJwtToken();
     const options = {
         expires: new Date(Date.now()+process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
@@ -24,14 +25,26 @@ const login = async(req, res, next) => {
     if(!userName || !password) throw new Error ('Please provide username and password')
 
     const tutor = await Tutor.findOne({userName}).select('+password')
+    
 
     if(!tutor) throw new error ('Invalid credentials')
 
     const isMatch = await tutor.matchPassword(password);
 
     if(!isMatch) throw new Error('Invalid credentails')
-
     sendTokenResponse(tutor, 200, res)
+}
+
+const logout = async(req, res, next) => {
+    res
+        .status(200)
+        .cookie('token', 'none', {
+            expires: new Date(Date.now() + 10 * 1000),
+            httpOnly: true
+        })
+        .json({success: true, msg: 'Successfully logged out'})
+    
+        console.log(res.cookie)
 }
 
 const getTutors = async(req, res, next) => {
@@ -167,5 +180,6 @@ module.exports = {
     getTutors,
     postTutor,
     deleteTutors,
-    login
+    login,
+    logout
 }
