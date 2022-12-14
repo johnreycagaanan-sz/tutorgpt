@@ -7,7 +7,10 @@ const {
     getTutors,
     deleteTutors,
     login,
-    logout
+    logout,
+    forgotPassword,
+    resetPassword,
+    updatePassword
 } = require('../controllers/tutorController');
 const protectedRouteForTutor = require('../middlewares/authTutor');
 router.route('/')
@@ -20,5 +23,14 @@ router.route('/login')
 
 router.route('/logout')
       .get(reqReceived, protectedRouteForTutor, logout)
+
+router.route('/forgotpassword')
+      .post(reqReceived, forgotPassword)
+
+router.route('/updatepassword')
+      .put(reqReceived, protectedRouteForTutor, updatePassword)
+
+router.route('/resetpassword')
+      .put(reqReceived, resetPassword)
 
 module.exports = router

@@ -3,7 +3,6 @@ const crypto = require('crypto');
 const path = require('path');
 
 const sendTokenResponse = (tutor, statusCode, res) => {
-    console.log(`SEND TOKEN RESPONSE`)
     const token = tutor.getSignedJwtToken();
     const options = {
         expires: new Date(Date.now()+process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
@@ -42,9 +41,63 @@ const logout = async(req, res, next) => {
             expires: new Date(Date.now() + 10 * 1000),
             httpOnly: true
         })
-        .json({success: true, msg: 'Successfully logged out'})
+        .json({success: true, msg: `Successfully logged out`})
     
-        console.log(res.cookie)
+        
+}
+
+const forgotPassword = async(req, res, next) => {
+    const tutor = await Tutor.findOne({userName: req.body.userName})
+
+    if(!tutor) throw new Error('No tutor found');
+
+    const resetToken = tutor.getResetPasswordToken();
+
+    try {
+        await tutor.save({ validateBeforeSave: false })
+        res
+            .status(200)
+            .setHeader('Content-Type', 'application/json')
+            .json({succes: true, msg: `Password has been reset with token: ${resetToken}`})
+    } catch (err) {
+        tutor.resetPasswordToken = undefined;
+        tutor.resetPasswordExpire = undefined;
+
+        await tutor.save({ validateBeforeSave: false })
+        throw new Error(`Failed to save new password`)
+    }
+}
+
+const resetPassword = async(req, res, next) => {
+    const resetPasswordToken = crypto.createHash('sha256').update(req.query.resetToken).digest('hex');
+    console.log(resetPasswordToken)
+    const tutor = await Tutor.findOne({
+        resetPasswordToken,
+        resetPasswordExpire: { $gt: Date.now() }
+    })
+    
+
+    if(!tutor) throw new Error('Invalid token');
+
+    tutor.password = req.body.password;
+    tutor.resetPasswordExpire = undefined;
+    tutor.resetPasswordToken = undefined;
+
+    await tutor.save();
+
+    sendTokenResponse(tutor, 200, res)
+}
+
+const updatePassword = async(req, res, next) => {
+    const tutor = await Tutor.findById(req.tutor.id).select('+password');
+
+    const passwordMatches = await tutor.matchPassword(req.body.password);
+
+    if(!passwordMatches) throw new Error('Password is incorrect');
+    tutor.password = req.body.newPassword
+
+    await tutor.save();
+    sendTokenResponse(tutor, 200, res)
 }
 
 const getTutors = async(req, res, next) => {
@@ -181,5 +234,8 @@ module.exports = {
     postTutor,
     deleteTutors,
     login,
-    logout
+    logout,
+    forgotPassword,
+    resetPassword,
+    updatePassword
 }
