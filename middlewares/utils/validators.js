@@ -1,8 +1,8 @@
-const songValidator = (req, res, next) => {
+const tutorValidator = (req, res, next) => {
     if (req.body){
-        if(!req.body.songTitle ||
-           !req.body.artist ||
-           !req.body.genre){
+        if(!req.body.tutorName ||
+           !req.body.email ||
+           !req.body.phoneNumber){
             res
             .status(400)
             .setHeader('Content-Type', 'text/plain')
@@ -66,7 +66,7 @@ const adminValidator =(req, res, next) => {
     }
 }
 module.exports = {
-    songValidator,
+    tutorValidator,
     artistValidator,
     userValidator,
     adminValidator

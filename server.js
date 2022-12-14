@@ -52,14 +52,13 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5001;
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`)
-})
-
 app.use('/api/tutor', tutor);
 
+const server = app.listen(PORT, () => {
+    console.log(`Server is listening on PORT: ${PORT}`)
+}); 
 
 process.on('unhandledRejection', (err, promise) => {
-    console.log(`Error is ${err.message}`);
-    server.close(() => process.exit(1))
+    console.log(`Error: ${err.message}`); 
+    server.close(() => process.exit(1));
 })

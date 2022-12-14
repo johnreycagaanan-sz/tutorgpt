@@ -1,6 +1,22 @@
 const Tutor = require('../models/Tutor');
 const path = require('path');
 
+const login = async(req, res, next) => {
+    const {userName, password } = req.body
+
+    if(!userName || !password) throw new Error ('Please provide username and password')
+
+    const tutor = await Tutor.findOne({userName}).select('+password')
+
+    if(!tutor) throw new error ('Invalid credentials')
+
+    const isMatch = await tutor.matchPassword(password);
+
+    if(!isMatch) throw new Error('Invalid credentails')
+
+    sendTokenResponse(tutor, 200, res)
+}
+
 const getTutors = async(req, res, next) => {
     const filter = {};
     const options = {};
@@ -129,8 +145,10 @@ const deleteTutors = async (req, res, next) => {
 //     })
 // }
 
+
 module.exports = {
     getTutors,
     postTutor,
-    deleteTutors
+    deleteTutors,
+    login
 }
