@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
-const protectedRoute = async(req, res, next) => {
+const Tutor = require('../models/Tutor');
+const protectedRouteForTutor = async(req, res, next) => {
     let token;
 
     if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
@@ -11,7 +11,7 @@ const protectedRoute = async(req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET)
-        req.user = await User.findById(decoded.id)
+        req.tutor = await Tutor.findById(decoded.id)
 
         next();
     } catch (err) {
@@ -19,4 +19,4 @@ const protectedRoute = async(req, res, next) => {
     }
 }
 
-module.exports = protectedRoute;
+module.exports = protectedRouteForTutor;

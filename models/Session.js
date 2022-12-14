@@ -3,16 +3,20 @@ const Schema = mongoose.Schema;
 
 const SessionSchema = new Schema({
     tutorName:{
-        type: String
+        type: String,
+        required: [true, "Please enter tutorName"]
     },
-    tuteeNames:{
-        type: [String]
+    enrolled:{
+        type: Number,
+        default: 0
     },
     schedule:{
-        type: String
+        type: String,
+        required: true
     },
     subject:{
-        type: String
+        type: String,
+        required: true
     },
     rating:[RatingSchema]
 },{

@@ -8,7 +8,9 @@ const getTutors = async(req, res, next) => {
         const {
             subject,
             schedule,
-            tutorName
+            tutorName,
+            limit,
+            sortByAvailability
         } = req.query;
         
         if (subject) filter.subject = true;
@@ -16,8 +18,8 @@ const getTutors = async(req, res, next) => {
         if (tutorName) filter.tutorName = true;
 
         if (limit) options.limit = limit;
-        if (sortByGenre) options.sort = {
-            genre: sortByGenre === 'asc' ? 1: -1
+        if (sortByAvailability) options.sort = {
+            availability: sortByAvailability === 'asc' ? 1: -1
         }
 
     }
@@ -47,18 +49,18 @@ const postTutor = async(req, res, next) => {
     
 }
 
-// const deleteArtists = async (req, res, next) => {
-//     try {
-//         await Tutor.deleteMany();
-//         res
-//             .status(200)
-//             .setHeader('Content-Type', 'application/json')
-//             .json({success:true, msg: 'Artists deleted'})
-//     } catch (err) {
-//         throw new Error(`Error deleting artists: ${err.message}`);
-//     }
+const deleteTutors = async (req, res, next) => {
+    try {
+        await Tutor.deleteMany();
+        res
+            .status(200)
+            .setHeader('Content-Type', 'application/json')
+            .json({success:true, msg: 'Tutors removed'})
+    } catch (err) {
+        throw new Error(`Error removing tutors: ${err.message}`);
+    }
    
-// }
+}
 
 // const getArtist = async(req, res, next) => {
 //     try {
@@ -128,5 +130,7 @@ const postTutor = async(req, res, next) => {
 // }
 
 module.exports = {
-    postTutor
+    getTutors,
+    postTutor,
+    deleteTutors
 }
