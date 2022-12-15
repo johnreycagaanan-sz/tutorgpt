@@ -13,10 +13,12 @@ const {
     updatePassword
 } = require('../controllers/tutorController');
 const protectedRouteForTutor = require('../middlewares/authTutor');
+const {adminValidator} = require('../middlewares/utils/validators')
+
 router.route('/')
       .get(reqReceived, getTutors)
       .post(reqReceived, tutorValidator, postTutor)
-      .delete(reqReceived, deleteTutors)
+      .delete(reqReceived, adminValidator, deleteTutors)
 
 router.route('/login')
       .post(reqReceived, login)
