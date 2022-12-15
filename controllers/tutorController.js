@@ -25,6 +25,7 @@ const login = async(req, res, next) => {
 
     const tutor = await Tutor.findOne({userName}).select('+password')
     
+    console.log(`I made changes`)
 
     if(!tutor) throw new error ('Invalid credentials')
 
