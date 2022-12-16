@@ -6,6 +6,7 @@ const {
     postTutor,
     getTutors,
     deleteTutors,
+    getTutor,
     login,
     logout,
     forgotPassword,
@@ -19,6 +20,9 @@ router.route('/')
       .get(reqReceived, getTutors)
       .post(reqReceived, tutorValidator, postTutor)
       .delete(reqReceived, adminValidator, deleteTutors)
+
+router.route('/:tutorId')
+      .get(reqReceived, getTutor)
 
 router.route('/login')
       .post(reqReceived, login)

@@ -158,6 +158,19 @@ const deleteTutors = async (req, res, next) => {
    
 }
 
+const getTutor = async(req, res, next) => {
+    try {
+        const tutor = await Tutor.findById(req.params.tutorId);
+        res
+            .status(200)
+            .setHeader('Content-Type', 'application/json')
+            .json(tutor)
+    } catch (err) {
+        throw new Error(`Error retrieving tutor ${req.params.tutorId}: ${err.message}`);
+    }
+    
+}
+
 // const getArtist = async(req, res, next) => {
 //     try {
 //         const tutor = await Tutor.findById(req.params.artistId);
@@ -234,5 +247,6 @@ module.exports = {
     logout,
     forgotPassword,
     resetPassword,
-    updatePassword
+    updatePassword,
+    getTutor
 }
