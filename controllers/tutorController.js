@@ -171,35 +171,65 @@ const getTutor = async(req, res, next) => {
     
 }
 
+const deleteTutor = async(req, res, next) => {
+    try {
+        await Tutor.findByIdAndDelete(req.params.tutorId);
+        res
+            .status(200)
+            .setHeader('Content-Type', 'application/json')
+            .json({success:true, msg: `Deleting tutor: ${req.params.tutorId}`})
+    } catch (err) {
+        throw new Error(`Error deleting tutor ${req.params.tutorId}: ${err.message}`);
+    }
+    
+}
+
+const updateTutor = async(req, res, next) => {
+    try {
+        const tutor = await Tutor.findByIdAndUpdate(req.params.tutorId,{
+            $set: req.body
+        },{
+            new: true
+        });
+        res
+            .status(200)
+            .setHeader('Content-Type', 'application/json')
+            .json(tutor)
+    } catch (err) {
+        throw new Error(`Error updating tutor ${req.params.tutorId}: ${err.message}`)
+    }
+    
+};
+
 // const getArtist = async(req, res, next) => {
 //     try {
-//         const tutor = await Tutor.findById(req.params.artistId);
+//         const tutor = await Tutor.findById(req.params.tutorId);
 //         res
 //             .status(200)
 //             .setHeader('Content-Type', 'application/json')
 //             .json(tutor)
 //     } catch (err) {
-//         throw new Error(`Error retrieving tutor ${req.params.artistId}: ${err.message}`);
+//         throw new Error(`Error retrieving tutor ${req.params.tutorId}: ${err.message}`);
 //     }
     
 // }
 
 // const deleteArtist = async(req, res, next) => {
 //     try {
-//         await Tutor.findByIdAndDelete(req.params.artistId);
+//         await Tutor.findByIdAndDelete(req.params.tutorId);
 //         res
 //             .status(200)
 //             .setHeader('Content-Type', 'application/json')
-//             .json({success:true, msg: `Deleting tutor: ${req.params.artistId}`})
+//             .json({success:true, msg: `Deleting tutor: ${req.params.tutorId}`})
 //     } catch (err) {
-//         throw new Error(`Error deleting tutor ${req.params.artistId}: ${err.message}`);
+//         throw new Error(`Error deleting tutor ${req.params.tutorId}: ${err.message}`);
 //     }
     
 // }
 
 // const updateArtist = async(req, res, next) => {
 //     try {
-//         const tutor = await Tutor.findByIdAndUpdate(req.params.artistId,{
+//         const tutor = await Tutor.findByIdAndUpdate(req.params.tutorId,{
 //             $set: req.body
 //         },{
 //             new: true
@@ -209,7 +239,7 @@ const getTutor = async(req, res, next) => {
 //             .setHeader('Content-Type', 'application/json')
 //             .json(tutor)
 //     } catch (err) {
-//         throw new Error(`Error updating tutor ${req.params.artistId}: ${err.message}`)
+//         throw new Error(`Error updating tutor ${req.params.tutorId}: ${err.message}`)
 //     }
     
 // };
@@ -230,7 +260,7 @@ const getTutor = async(req, res, next) => {
 //         file.mv(filePath, async (err) => {
 //         if(err) throw new Error(`Problem uploading photo: ${err.message}`);
 
-//         await Tutor.findByIdAndUpdate(req.params.artistId, {image: file.name})
+//         await Tutor.findByIdAndUpdate(req.params.tutorId, {image: file.name})
 //         res
 //         .status(200)
 //         .setHeader('Content-Type', 'application/json')
@@ -248,5 +278,7 @@ module.exports = {
     forgotPassword,
     resetPassword,
     updatePassword,
-    getTutor
+    getTutor,
+    deleteTutor,
+    updateTutor
 }

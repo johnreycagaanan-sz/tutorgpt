@@ -11,7 +11,9 @@ const {
     logout,
     forgotPassword,
     resetPassword,
-    updatePassword
+    updatePassword,
+    deleteTutor,
+    updateTutor
 } = require('../controllers/tutorController');
 const protectedRouteForTutor = require('../middlewares/authTutor');
 const {adminValidator} = require('../middlewares/utils/validators')
@@ -23,6 +25,8 @@ router.route('/')
 
 router.route('/:tutorId')
       .get(reqReceived, getTutor)
+      .delete(reqReceived, protectedRouteForTutor, deleteTutor)
+      .put(reqReceived, protectedRouteForTutor, updateTutor)
 
 router.route('/login')
       .post(reqReceived, login)
