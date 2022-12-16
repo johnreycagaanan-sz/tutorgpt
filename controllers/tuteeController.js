@@ -68,8 +68,8 @@ const forgotPassword = async(req, res, next) => {
 }
 
 const resetPassword = async(req, res, next) => {
+    // console.log(resetPasswordToken)
     const resetPasswordToken = crypto.createHash('sha256').update(req.query.resetToken).digest('hex');
-    console.log(resetPasswordToken)
     const tutee = await Tutee.findOne({
         resetPasswordToken,
         resetPasswordExpire: { $gt: Date.now() }
@@ -77,6 +77,7 @@ const resetPassword = async(req, res, next) => {
     
 
     if(!tutee) throw new Error('Invalid token');
+    console.log(req.body.password)
 
     tutee.password = req.body.password;
     tutee.resetPasswordExpire = undefined;
@@ -130,7 +131,7 @@ const getTutees = async(req, res, next) => {
     }
 }
 
-const postTutor = async(req, res, next) => {
+const postTutee = async(req, res, next) => {
     try {
         const tutee = await Tutee.create(req.body);
         res
@@ -143,7 +144,7 @@ const postTutor = async(req, res, next) => {
     
 }
 
-const deleteTutors = async (req, res, next) => {
+const deleteTutees = async (req, res, next) => {
     try {
         await Tutee.deleteMany();
         res
@@ -156,7 +157,7 @@ const deleteTutors = async (req, res, next) => {
    
 }
 
-const getTutor = async(req, res, next) => {
+const getTutee = async(req, res, next) => {
     try {
         const tutee = await Tutee.findById(req.params.tuteeId);
         res
@@ -169,7 +170,7 @@ const getTutor = async(req, res, next) => {
     
 }
 
-const deleteTutor = async(req, res, next) => {
+const deleteTutee = async(req, res, next) => {
     try {
         await Tutee.findByIdAndDelete(req.params.tuteeId);
         res
@@ -182,7 +183,7 @@ const deleteTutor = async(req, res, next) => {
     
 }
 
-const updateTutor = async(req, res, next) => {
+const updateTutee = async(req, res, next) => {
     try {
         const tutee = await Tutee.findByIdAndUpdate(req.params.tuteeId,{
             $set: req.body
@@ -227,14 +228,14 @@ const updateTutor = async(req, res, next) => {
 
 module.exports = {
     getTutees,
-    postTutor,
-    deleteTutors,
+    postTutee,
+    deleteTutees,
     login,
     logout,
     forgotPassword,
     resetPassword,
     updatePassword,
-    getTutor,
-    deleteTutor,
-    updateTutor
+    getTutee,
+    deleteTutee,
+    updateTutee
 }
