@@ -6,23 +6,18 @@ const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
 
 
-const RatingSchema = new Schema({
-    rating: {
-        type: Number,
-        min: 1,
-        max: 5,
-        required: true,
-        validate : rating => {
-            return typeof rating === 'number';
-        }
-    },
-    text: {
-        type: String,
+const ScheduleSchema = new Schema({
+    startTime: {
+        type: Date,
         required: true
     },
-    author: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Tutee'
+    endTime: {
+        type: Date,
+        required: true
+    },
+    subject: {
+        type: String,
+        required: true
     }
 },{
     timestamps: true
@@ -98,7 +93,7 @@ const TutorSchema = new Schema({
         type: Boolean,
         default: false
     },
-    ratings: [RatingSchema]
+    schedule: [ScheduleSchema]
 }, {
     timestamps: true
 })

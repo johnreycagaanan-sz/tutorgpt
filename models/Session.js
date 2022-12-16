@@ -10,8 +10,12 @@ const SessionSchema = new Schema({
         type: Number,
         default: 0
     },
-    schedule:{
-        type: String,
+    startTime:{
+        type: Date,
+        required: true
+    },
+    endTime:{
+        type: Date,
         required: true
     },
     subject:{

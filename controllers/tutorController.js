@@ -132,8 +132,6 @@ const getTutors = async(req, res, next) => {
     }
 }
 
-
-
 const postTutor = async(req, res, next) => {
     try {
         const tutor = await Tutor.create(req.body);
