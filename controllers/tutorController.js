@@ -201,48 +201,6 @@ const updateTutor = async(req, res, next) => {
     
 };
 
-// const getArtist = async(req, res, next) => {
-//     try {
-//         const tutor = await Tutor.findById(req.params.tutorId);
-//         res
-//             .status(200)
-//             .setHeader('Content-Type', 'application/json')
-//             .json(tutor)
-//     } catch (err) {
-//         throw new Error(`Error retrieving tutor ${req.params.tutorId}: ${err.message}`);
-//     }
-    
-// }
-
-// const deleteArtist = async(req, res, next) => {
-//     try {
-//         await Tutor.findByIdAndDelete(req.params.tutorId);
-//         res
-//             .status(200)
-//             .setHeader('Content-Type', 'application/json')
-//             .json({success:true, msg: `Deleting tutor: ${req.params.tutorId}`})
-//     } catch (err) {
-//         throw new Error(`Error deleting tutor ${req.params.tutorId}: ${err.message}`);
-//     }
-    
-// }
-
-// const updateArtist = async(req, res, next) => {
-//     try {
-//         const tutor = await Tutor.findByIdAndUpdate(req.params.tutorId,{
-//             $set: req.body
-//         },{
-//             new: true
-//         });
-//         res
-//             .status(200)
-//             .setHeader('Content-Type', 'application/json')
-//             .json(tutor)
-//     } catch (err) {
-//         throw new Error(`Error updating tutor ${req.params.tutorId}: ${err.message}`)
-//     }
-    
-// };
 
 // const postArtistImage = async (req, res ,next) => {
 //         if(!req.files) throw new Error('Missing image!');

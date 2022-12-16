@@ -17,11 +17,12 @@ const tutorValidator = (req, res, next) => {
     }
 }
 
-const artistValidator = (req, res, next) => {
+const tuteeValidator = (req, res, next) => {
     if (req.body){
-        if(!req.body.firstName ||
-           !req.body.lastName ||
-           !req.body.genre){
+        if(!req.body.tuteeName ||
+           !req.body.userName ||
+           !req.body.gender ||
+           !req.body.age){
             res
             .status(400)
             .setHeader('Content-Type', 'text/plain')
@@ -67,7 +68,7 @@ const adminValidator =(req, res, next) => {
 }
 module.exports = {
     tutorValidator,
-    artistValidator,
+    tuteeValidator,
     userValidator,
     adminValidator
 }

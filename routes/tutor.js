@@ -23,11 +23,6 @@ router.route('/')
       .post(reqReceived, tutorValidator, postTutor)
       .delete(reqReceived, adminValidator, deleteTutors)
 
-router.route('/:tutorId')
-      .get(reqReceived, getTutor)
-      .delete(reqReceived, protectedRouteForTutor, deleteTutor)
-      .put(reqReceived, protectedRouteForTutor, updateTutor)
-
 router.route('/login')
       .post(reqReceived, login)
 
@@ -42,5 +37,12 @@ router.route('/updatepassword')
 
 router.route('/resetpassword')
       .put(reqReceived, resetPassword)
+
+router.route('/:tutorId')
+      .get(reqReceived, getTutor)
+      .delete(reqReceived, protectedRouteForTutor, deleteTutor)
+      .put(reqReceived, protectedRouteForTutor, updateTutor)
+
+
 
 module.exports = router
