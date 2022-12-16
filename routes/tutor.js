@@ -1,6 +1,10 @@
 const express = require('express')
 const reqReceived = require('../middlewares/reqReceived');
 const { tutorValidator } = require('../middlewares/utils/validators');
+const {
+      getSessions,
+      addSession
+} = require('../controllers/sessionController')
 const router = express.Router()
 const {
     postTutor,
@@ -42,6 +46,10 @@ router.route('/:tutorId')
       .get(reqReceived, getTutor)
       .delete(reqReceived, protectedRouteForTutor, deleteTutor)
       .put(reqReceived, protectedRouteForTutor, updateTutor)
+
+router.route('/:tutorId/session')
+      .get(reqReceived, protectedRouteForTutor, getSessions)
+      .post(reqReceived, protectedRouteForTutor, addSession)
 
 
 

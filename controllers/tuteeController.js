@@ -141,7 +141,6 @@ const postTutee = async(req, res, next) => {
     } catch (err) {
         throw new Error(`Error creating tutee: ${err.message}`);
     }
-    
 }
 
 const deleteTutees = async (req, res, next) => {

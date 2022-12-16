@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const tutor = require('./routes/tutor');
 const tutee = require('./routes/tutee');
+const session = require('./routes/session');
 const logger = require('./middlewares/logger');
 const errorHandler = require('./middlewares/error');
 const connectDB = require('./config/db');
@@ -55,6 +56,7 @@ const PORT = process.env.PORT || 5001;
 
 app.use('/api/tutor', tutor);
 app.use('/api/tutee', tutee);
+app.use('/api/session', session);
 
 
 const server = app.listen(PORT, () => {

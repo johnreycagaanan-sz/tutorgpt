@@ -37,11 +37,11 @@ const tuteeValidator = (req, res, next) => {
     }
 }
 
-const userValidator = (req, res, next) => {
+const sessionValidator = (req, res, next) => {
     if (req.body){
-        if(!req.body.userName ||
-           !req.body.gender ||
-           !req.body.age){
+        if(!req.body.startTime ||
+           !req.body.endTime ||
+           !req.body.subject){
             res
             .status(400)
             .setHeader('Content-Type', 'text/plain')
@@ -69,6 +69,6 @@ const adminValidator =(req, res, next) => {
 module.exports = {
     tutorValidator,
     tuteeValidator,
-    userValidator,
+    sessionValidator,
     adminValidator
 }

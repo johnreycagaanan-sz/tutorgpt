@@ -2,10 +2,6 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const SessionSchema = new Schema({
-    tutorName:{
-        type: String,
-        required: [true, "Please enter tutorName"]
-    },
     enrolled:{
         type: Number,
         default: 0
