@@ -6,22 +6,22 @@ const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
 
 
-const ScheduleSchema = new Schema({
-    startTime: {
-        type: Date,
-        required: true
-    },
-    endTime: {
-        type: Date,
-        required: true
-    },
-    subject: {
-        type: String,
-        required: true
-    }
-},{
-    timestamps: true
-})
+// const ScheduleSchema = new Schema({
+//     startTime: {
+//         type: Date,
+//         required: true
+//     },
+//     endTime: {
+//         type: Date,
+//         required: true
+//     },
+//     subject: {
+//         type: String,
+//         required: true
+//     }
+// },{
+//     timestamps: true
+// })
 
 const TutorSchema = new Schema({
     tutorName:{
@@ -92,8 +92,8 @@ const TutorSchema = new Schema({
     admin: {
         type: Boolean,
         default: false
-    },
-    schedule: [ScheduleSchema]
+    }
+    // schedule: [ScheduleSchema]
 }, {
     timestamps: true
 })
