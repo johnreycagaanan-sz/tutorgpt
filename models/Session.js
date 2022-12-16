@@ -2,6 +2,9 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const SessionSchema = new Schema({
+    tutorName: {
+        type: String,
+    },
     enrolled:{
         type: Number,
         default: 0

@@ -37,7 +37,7 @@ const getSessions = async(req, res, next) => {
 const addSession = async(req, res, next) => {
     const tutor = await Tutor.findOne({ _id : req.params.tutorId})
     try {
-        const session = await Session.create(req.body);
+        const session = await Session.create({...req.body, tutorName: tutor.tutorName});
         res
             .status(201)
             .setHeader('Content-Type', 'application/json')
