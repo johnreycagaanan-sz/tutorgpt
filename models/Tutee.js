@@ -6,8 +6,10 @@ const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
 
 const EnrolledSessions = new Schema({
-    type: Schema.Types.ObjectId,
-    ref: 'Session'
+    session: {
+        type: Schema.Types.ObjectId,
+        ref: 'Session'
+    }
 })
 
 const TuteeSchema = new Schema({

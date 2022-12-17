@@ -13,7 +13,8 @@ const {
     resetPassword,
     updatePassword,
     deleteTutee,
-    updateTutee
+    updateTutee,
+    enroll
 } = require('../controllers/tuteeController');
 const protectedRouteForTutee = require('../middlewares/authTutee');
 const {adminValidator} = require('../middlewares/utils/validators')
@@ -43,6 +44,7 @@ router.route('/:tuteeId')
       .delete(reqReceived, protectedRouteForTutee, deleteTutee)
       .put(reqReceived, protectedRouteForTutee, updateTutee)
 
-
+router.route('/:tuteeId/:sessionId')
+      .post(reqReceived, protectedRouteForTutee, enroll)
 
 module.exports = router

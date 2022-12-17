@@ -11,5 +11,5 @@ const protectedRouteForTutor = require('../middlewares/authTutor');
 router.route('/')
       .get(reqReceived, adminValidator, getSessions)
       .post(reqReceived, protectedRouteForTutor, addSession)
-      
+
 module.exports = router

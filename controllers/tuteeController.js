@@ -1,4 +1,5 @@
 const Tutee = require('../models/Tutee');
+const Session = require('../models/Session');
 const crypto = require('crypto');
 const path = require('path');
 
@@ -199,31 +200,25 @@ const updateTutee = async(req, res, next) => {
     
 };
 
+const enroll = async(req, res, next) => {
+    try {
+        const tutee = await Tutee.findById(req.params.tuteeId);
+        const session = await Session.findById(req.params.sessionId);
+        const enrolledTutee = { tutee: tutee._id}
+        const enrolledSession = { session: session._id}
 
-// const postArtistImage = async (req, res ,next) => {
-//         if(!req.files) throw new Error('Missing image!');
-
-//         const file = req.files.file;
-
-//         if(!file.mimetype.startsWith('image')) throw new Error('Please upload a image file type!');
-
-//         if(file.size > process.env.MAX_FILE_SIZE) throw new Error(`Image exceeds size of ${process.env.MAX_FILE_SIZE}`);
-
-//         file.name = `photo_${path.parse(file.name).ext}`;
-
-//         const filePath = process.env.FILE_UPLOAD_PATH + file.name;
-
-//         file.mv(filePath, async (err) => {
-//         if(err) throw new Error(`Problem uploading photo: ${err.message}`);
-
-//         await Tutee.findByIdAndUpdate(req.params.tuteeId, {image: file.name})
-//         res
-//         .status(200)
-//         .setHeader('Content-Type', 'application/json')
-//         .json({success: true, data: file.name})
-//     })
-// }
-
+        session.enrolledTutees.push(enrolledTutee);
+        tutee.enrolledSessions.push(enrolledSession);
+    
+        await tutee.save();
+        await session.save();
+    
+        res.status(200).json({ message: 'Tutee enrolled in session successfully' });
+      } catch (error) {
+        res.status(500).json({ message: 'Error enrolling tutee in session', error });
+      }
+    
+}
 
 module.exports = {
     getTutees,
@@ -236,5 +231,6 @@ module.exports = {
     updatePassword,
     getTutee,
     deleteTutee,
-    updateTutee
+    updateTutee,
+    enroll
 }
