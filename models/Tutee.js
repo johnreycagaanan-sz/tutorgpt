@@ -5,6 +5,11 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
 
+const EnrolledSessions = new Schema({
+    type: Schema.Types.ObjectId,
+    ref: 'Session'
+})
+
 const TuteeSchema = new Schema({
     tuteeName:{
         type: String,
@@ -61,7 +66,8 @@ const TuteeSchema = new Schema({
     },
     resetPasswordExpire:{
         type: Date
-    }
+    },
+    enrolledSessions : [EnrolledSessions]
 }, {
     timestamps: true
 })

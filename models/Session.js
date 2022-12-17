@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const TuteesEnrolled = new Schema({
+    type: Schema.Types.ObjectId,
+    ref: 'Tutee'
+})
+
 const SessionSchema = new Schema({
     tutorName: {
         type: String,
@@ -21,6 +26,7 @@ const SessionSchema = new Schema({
         type: String,
         required: true
     },
+    tuteesEnrolled : [TuteesEnrolled]
 },{
     timestamps: true
 })

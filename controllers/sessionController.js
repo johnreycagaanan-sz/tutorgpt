@@ -101,6 +101,10 @@ const updateSession = async(req, res, next) => {
     
 };
 
+const enroll = async(req, res, next) => {
+    
+}
+
 module.exports = {
     getSessions,
     addSession,
