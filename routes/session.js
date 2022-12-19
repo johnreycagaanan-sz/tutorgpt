@@ -7,9 +7,10 @@ const {
     addSession
 } = require('../controllers/sessionController');
 const protectedRouteForTutor = require('../middlewares/authTutor');
+const protectedRouteForTutee = require('../middlewares/authTutee');
 
 router.route('/')
-      .get(reqReceived, adminValidator, getSessions)
+      .get(reqReceived, protectedRouteForTutor || protectedRouteForTutee, getSessions)
       .post(reqReceived, protectedRouteForTutor, addSession)
 
 module.exports = router

@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const Tutee = require('../models/Tutee');
 const protectedRouteForTutee = async(req, res, next) => {
+    console.log(`PROTECTED ROUTE`)
     let token;
     if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
         token = req.headers.authorization.split(' ')[1];
@@ -11,7 +12,7 @@ const protectedRouteForTutee = async(req, res, next) => {
         req.tutee = await Tutee.findById(decoded.id)
         next()
     } catch (err) {
-        throw new Error(err.mesage)
+        throw new Error(err.message)
     }
 
 }

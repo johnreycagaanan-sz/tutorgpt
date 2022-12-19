@@ -2,6 +2,7 @@ const express = require('express')
 const reqReceived = require('../middlewares/reqReceived');
 const { tuteeValidator } = require('../middlewares/utils/validators');
 const router = express.Router()
+const {getTuteeSessions} = require('../controllers/tuteeController')
 const {
     postTutee,
     getTutees,
@@ -17,12 +18,13 @@ const {
     enroll
 } = require('../controllers/tuteeController');
 const protectedRouteForTutee = require('../middlewares/authTutee');
+const protectedRouteForTutor = require('../middlewares/authTutor');
 const {adminValidator} = require('../middlewares/utils/validators')
 
 router.route('/')
-      .get(reqReceived, adminValidator, getTutees)
+      .get(reqReceived, protectedRouteForTutor, adminValidator, getTutees)
       .post(reqReceived, tuteeValidator, postTutee)
-      .delete(reqReceived, adminValidator, deleteTutees)
+      .delete(reqReceived, protectedRouteForTutor, adminValidator, deleteTutees)
 
 router.route('/login')
       .post(reqReceived, login)
@@ -44,7 +46,11 @@ router.route('/:tuteeId')
       .delete(reqReceived, protectedRouteForTutee, deleteTutee)
       .put(reqReceived, protectedRouteForTutee, updateTutee)
 
-router.route('/:tuteeId/:sessionId')
+router.route('/:tuteeId/session')
+      .get(reqReceived, protectedRouteForTutee , getTuteeSessions)
       .post(reqReceived, protectedRouteForTutee, enroll)
+
+// router.route('/:tuteeId/session/:sessionId')
+//       .post(reqReceived, protectedRouteForTutee, enroll)
 
 module.exports = router

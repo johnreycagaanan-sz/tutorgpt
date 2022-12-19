@@ -200,16 +200,25 @@ const updateTutee = async(req, res, next) => {
     
 };
 
+const getTuteeSessions = async(req, res, next) => {
+    try {
+        const tutee = await Tutee.findById(req.params.tuteeId).populate('enrolledSessions');
+        const tuteeSessions = tutee.enrolledSessions
+    
+        res.status(200).json(tuteeSessions);
+      } catch (error) {
+        res.status(500).json({ message: `Error retrieving sessions for: ${tutee.tuteeName}`, error });
+      }
+}
+
 const enroll = async(req, res, next) => {
     try {
         const tutee = await Tutee.findById(req.params.tuteeId);
-        const session = await Session.findById(req.params.sessionId);
-        const enrolledTutee = { tutee: tutee._id}
-        const enrolledSession = { session: session._id}
+        const session = await Session.findById(req.query.sessionId);
 
-        session.enrolledTutees.push(enrolledTutee);
-        tutee.enrolledSessions.push(enrolledSession);
-    
+        session.tuteesEnrolled.push(tutee._id);
+        tutee.enrolledSessions.push(session._id);
+
         await tutee.save();
         await session.save();
     
@@ -232,5 +241,6 @@ module.exports = {
     getTutee,
     deleteTutee,
     updateTutee,
-    enroll
+    enroll,
+    getTuteeSessions
 }

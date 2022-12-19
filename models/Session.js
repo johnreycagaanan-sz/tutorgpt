@@ -1,16 +1,18 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const TuteesEnrolled = new Schema({
-    tutee: {
-        type: Schema.Types.ObjectId,
-        ref: 'Tutee'
-    }   
-})
+// const TuteesEnrolled = new Schema({
+//     tutee: {
+//         type: Schema.Types.ObjectId,
+//         ref: 'Tutee'
+//     }     
+// })
 
 const SessionSchema = new Schema({
     tutorName: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Tutor',
+        required: true
     },
     enrolled:{
         type: Number,
@@ -28,7 +30,10 @@ const SessionSchema = new Schema({
         type: String,
         required: true
     },
-    tuteesEnrolled : [TuteesEnrolled]
+    tuteesEnrolled : [{
+        type: Schema.Types.ObjectId,
+        ref: 'Tutee'
+    }]
 },{
     timestamps: true
 })

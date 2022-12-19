@@ -57,7 +57,7 @@ const sessionValidator = (req, res, next) => {
 }
 
 const adminValidator =(req, res, next) => {
-    if(req.user.admin){
+    if(req.tutor.admin){
         next();
     } else{
         res
