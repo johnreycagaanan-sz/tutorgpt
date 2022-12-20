@@ -4,13 +4,8 @@ const validator = require('validator');
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
+const Session = require('./Session');
 
-// const EnrolledSessions = new Schema({
-//     session: {
-//         type: Schema.Types.ObjectId,
-//         ref: 'Session'
-//     }
-// })
 
 const TuteeSchema = new Schema({
     tuteeName:{
@@ -76,6 +71,29 @@ const TuteeSchema = new Schema({
 }, {
     timestamps: true
 })
+
+// TuteeSchema.pre('on_delete', async function(next) {
+//     console.log(`REACHED PREHOOK`)
+//     const sessions = this.enrolledSessions;
+//     console.log(sessions)
+//     for (let i = 0; i < sessions.length; i++) {
+//       const session = await Session.findById(sessions[i]);
+//       const tuteeIndex = session.tuteesEnrolled.indexOf(this._id);
+//       if (tuteeIndex > -1) {
+//         session.tuteesEnrolled.splice(tuteeIndex, 1);
+//         await session.save();
+//       }
+//     }
+//     next();
+//   });
+  
+//   const Tutee = mongoose.model('Tutee', TuteeSchema);
+//   const Session = mongoose.model('Session', SessionSchema);
+
+  
+  
+  
+  
 
 TuteeSchema.pre('save', async function(next) {
     if(!this.isModified) next();

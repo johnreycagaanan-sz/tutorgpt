@@ -1,12 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const Tutee = require('./Tutee');
 
-// const TuteesEnrolled = new Schema({
-//     tutee: {
-//         type: Schema.Types.ObjectId,
-//         ref: 'Tutee'
-//     }     
-// })
 
 const SessionSchema = new Schema({
     tutorName: {
@@ -15,11 +10,11 @@ const SessionSchema = new Schema({
         required: true
     },
     startTime:{
-        type: Date,
+        type: String,
         required: true
     },
     endTime:{
-        type: Date,
+        type: String,
         required: true
     },
     subject:{
@@ -34,5 +29,17 @@ const SessionSchema = new Schema({
     timestamps: true
 })
 
+SessionSchema.pre('remove', async function(next) {
+    const tutees = this.tuteesEnrolled;
+    for (let i = 0; i < tutees.length; i++) {
+      const tutee = await Tutee.findById(tutees[i]);
+      const sessionIndex = tutee.enrolledSessions.indexOf(this._id);
+      if (sessionIndex > -1) {
+        tutee.enrolledSessions.splice(sessionIndex, 1);
+        await tutee.save();
+      }
+    }
+    next();
+  });
 
 module.exports = mongoose.model('Session', SessionSchema);

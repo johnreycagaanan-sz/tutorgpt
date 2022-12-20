@@ -177,9 +177,33 @@ const getTutee = async(req, res, next) => {
     
 }
 
-const deleteTutee = async(req, res, next) => {
+// const deleteTutee = async(req, res, next) => {
+//     try {
+//         await Tutee.findByIdAndDelete(req.params.tuteeId);
+//         res
+//             .status(200)
+//             .setHeader('Content-Type', 'application/json')
+//             .json({success:true, msg: `Deleting tutee: ${req.params.tuteeId}`})
+//     } catch (err) {
+//         throw new Error(`Error deleting tutee ${req.params.tuteeId}: ${err.message}`);
+//     }
+    
+// }
+
+const deleteTutee = async (req, res, next) => {
     try {
+        const { enrolledSessions } = await Tutee.findById(req.params.tuteeId)
+        
+
+        for (let session of enrolledSessions) {
+            const sessionToDeleteForTutee = await Session.findById(session._id)
+            sessionToDeleteForTutee.tuteesEnrolled = 
+            sessionToDeleteForTutee.tuteesEnrolled.map( tutee => !(tutee._id).equals(req.params.tuteeId) )
+            await sessionToDeleteForTutee.save(); 
+        }
+
         await Tutee.findByIdAndDelete(req.params.tuteeId);
+
         res
             .status(200)
             .setHeader('Content-Type', 'application/json')
@@ -189,7 +213,6 @@ const deleteTutee = async(req, res, next) => {
     }
     
 }
-
 const updateTutee = async(req, res, next) => {
     try {
         const tutee = await Tutee.findByIdAndUpdate(req.params.tuteeId,{
