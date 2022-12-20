@@ -29,7 +29,7 @@ const {adminValidator} = require('../middlewares/utils/validators')
 router.route('/')
       .get(reqReceived, getTutors)
       .post(reqReceived, tutorValidator, postTutor)
-      .delete(reqReceived, adminValidator, deleteTutors)
+      .delete(reqReceived, protectedRouteForTutor, adminValidator, deleteTutors)
 
 router.route('/login')
       .post(reqReceived, login)

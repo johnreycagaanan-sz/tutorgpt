@@ -71,15 +71,10 @@ const TutorSchema = new Schema({
             'Female'
         ]
     },
-    // subjects: {
-    //     type: [String],
-    //     required: [true, 'Please add your subjects'],
-    // },
-    // availability: [{
-    //     day: String,
-    //     startTime: String,
-    //     endTime: String
-    // }],
+    tutorSessions : [{
+        type: Schema.Types.ObjectId,
+        ref: 'Session'
+    }],
     details: {
         type: String,
     },

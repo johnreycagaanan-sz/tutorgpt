@@ -1,7 +1,12 @@
 const Session = require('../models/Session');
 const Tutor = require('../models/Tutor');
-
-
+const Tutee = require('../models/Tutee');
+const twilio = require('twilio')
+const dotenv = require('dotenv');
+dotenv.config({ path: '../config/config.env'});
+let accountSid = process.env.TWILIO_ACCOUNT_SID
+const authToken = process.env.TWILIO_AUTH_TOKEN
+const fromNumber = process.env.TWILIO_FROM
 const getSessions = async(req, res, next) => {
     const filter = {};
     const options = {};
@@ -38,6 +43,18 @@ const addSession = async(req, res, next) => {
     const tutor = await Tutor.findOne({ _id : req.params.tutorId})
     try {
         const session = await Session.create({...req.body, tutorName: tutor._id});
+        const sendTo = tutor.phoneNumber
+        const message_body = `You have made a new session of subject ${session.subject} starting at
+        ${session.startTime} until ${session.endTime}`
+
+        const client = new twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+
+        client.messages.create({
+            body: message_body,
+            to: sendTo,
+            from: process.env.TWILIO_FROM
+        }).then((message) => console.log(message.sid));
+
         res
             .status(201)
             .setHeader('Content-Type', 'application/json')
@@ -49,6 +66,10 @@ const addSession = async(req, res, next) => {
 
 const deleteSessions = async(req, res, next) => {
     try {
+        // const deletedSessions = await Session.deleteMany();
+        // const deletedSessionIds = deletedSessions.map(session => session._id);
+        // await Tutee.updateMany({}, { $pull: { enrolledStudents: { $in: deletedSessionIds } } });
+           
         await Session.deleteMany();
         res
             .status(200)
@@ -100,10 +121,6 @@ const updateSession = async(req, res, next) => {
     }
     
 };
-
-const enroll = async(req, res, next) => {
-    
-}
 
 module.exports = {
     getSessions,

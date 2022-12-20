@@ -201,30 +201,16 @@ const updateTutor = async(req, res, next) => {
     
 };
 
-
-// const postArtistImage = async (req, res ,next) => {
-//         if(!req.files) throw new Error('Missing image!');
-
-//         const file = req.files.file;
-
-//         if(!file.mimetype.startsWith('image')) throw new Error('Please upload a image file type!');
-
-//         if(file.size > process.env.MAX_FILE_SIZE) throw new Error(`Image exceeds size of ${process.env.MAX_FILE_SIZE}`);
-
-//         file.name = `photo_${path.parse(file.name).ext}`;
-
-//         const filePath = process.env.FILE_UPLOAD_PATH + file.name;
-
-//         file.mv(filePath, async (err) => {
-//         if(err) throw new Error(`Problem uploading photo: ${err.message}`);
-
-//         await Tutor.findByIdAndUpdate(req.params.tutorId, {image: file.name})
-//         res
-//         .status(200)
-//         .setHeader('Content-Type', 'application/json')
-//         .json({success: true, data: file.name})
-//     })
-// }
+const getTutorSessions = async(req, res, next) => {
+    try {
+        const tutor = await Tutor.findById(req.params.tutorId).populate('tutorSessions');
+        const tutorSessions = tutor.tutorSessions
+    
+        res.status(200).json(tutorSessions);
+      } catch (error) {
+        res.status(500).json({ message: `Error retrieving sessions for: ${tutor.tutorName}`, error });
+      }
+} 
 
 
 module.exports = {
@@ -238,5 +224,6 @@ module.exports = {
     updatePassword,
     getTutor,
     deleteTutor,
-    updateTutor
+    updateTutor,
+    getTutorSessions
 }

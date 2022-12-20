@@ -2,6 +2,9 @@ const Tutee = require('../models/Tutee');
 const Session = require('../models/Session');
 const crypto = require('crypto');
 const path = require('path');
+const dotenv = require('dotenv');
+dotenv.config({ path: '../config/config.env'});
+const twilio = require('twilio')
 
 const sendTokenResponse = (tutee, statusCode, res) => {
     const token = tutee.getSignedJwtToken();
@@ -144,18 +147,22 @@ const postTutee = async(req, res, next) => {
     }
 }
 
-const deleteTutees = async (req, res, next) => {
-    try {
+    const deleteTutees = async (req, res, next) => {
+        try {
+        // const deletedTutees = await Tutee.deleteMany();
+        // const deletedTuteeIds = deletedTutees.map(tutee => tutee._id);
+        // await Session.updateMany({}, { $pull: { enrolledStudents: { $in: deletedTuteeIds } } });
         await Tutee.deleteMany();
-        res
-            .status(200)
-            .setHeader('Content-Type', 'application/json')
-            .json({success:true, msg: 'Tutors removed'})
-    } catch (err) {
-        throw new Error(`Error removing tutees: ${err.message}`);
+           
+            res
+                .status(200)
+                .setHeader('Content-Type', 'application/json')
+                .json({success:true, msg: 'Tutees removed'})
+        } catch (err) {
+            throw new Error(`Error removing tutees: ${err.message}`);
+        }
+    
     }
-   
-}
 
 const getTutee = async(req, res, next) => {
     try {
@@ -214,20 +221,63 @@ const getTuteeSessions = async(req, res, next) => {
 const enroll = async(req, res, next) => {
     try {
         const tutee = await Tutee.findById(req.params.tuteeId);
-        const session = await Session.findById(req.query.sessionId);
+        const session = await Session.findById(req.params.sessionId);
+        const index = session.tuteesEnrolled.indexOf(tutee._id);
+        if(index !== -1){
+            session.tuteesEnrolled.splice(index, 1);
+            await Tutee.updateOne({ _id: tutee._id }, { $pull: { sessions: session._id } });
+        }else{
+        const client = new twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+        const message_body = `You have a class in ${session.subject} at ${session.startTime}`
+        const sendTo = tutee.phoneNumber
+        const reminderTime = new Date(session.startTime);
+        reminderTime.setHours(reminderTime.getHours() - 1);
+        client.messages.create({
+            body: message_body,
+            to: sendTo,
+            from: process.env.TWILIO_FROM,
+            schedule: reminderTime.toISOString()
+        }).then((message) => console.log(message.sid));
 
         session.tuteesEnrolled.push(tutee._id);
         tutee.enrolledSessions.push(session._id);
-
+    }
         await tutee.save();
         await session.save();
     
-        res.status(200).json({ message: 'Tutee enrolled in session successfully' });
+        res.status(200).json(session);
       } catch (error) {
         res.status(500).json({ message: 'Error enrolling tutee in session', error });
       }
     
 }
+
+// const unenroll = async(req,res,next) => {
+//     try {
+//         const tutee = await Tutee.findById(req.params.tuteeId);
+//         const session = await Session.findById(req.params.sessionId);
+//         const indexInTuteesEnrolled = session.tuteesEnrolled.indexOf(tutee._id)
+//         const indexInEnrolledSessions = tutee.enrolledSessions.indexOf(session._id)
+//         if(indexInTuteesEnrolled === -1) {
+//             res
+//                 .status(404)
+//                 .setHeader('Content-Type', 'application/json')
+//                 .json({success: false, msg: 'You are not enrolled in that class'})
+//         } else{
+//         session.tuteesEnrolled.splice(indexInTuteesEnrolled, 1);
+//         tutee.enrolledSessions.splice(indexInEnrolledSessions, 1);
+
+//         await session.save()
+//         await tutee.save()
+//         res
+//             .status(200)
+//             .setHeader('Content-Type', 'application/json')
+//             .json({success:true, msg: 'Unenrolled successfully'})
+//         }
+//     } catch (err) {
+//         throw new Error(`Error deleting sessions: ${err.message}`);
+//     }
+// }
 
 module.exports = {
     getTutees,
@@ -242,5 +292,5 @@ module.exports = {
     deleteTutee,
     updateTutee,
     enroll,
-    getTuteeSessions
+    getTuteeSessions,
 }

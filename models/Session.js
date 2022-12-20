@@ -14,10 +14,6 @@ const SessionSchema = new Schema({
         ref: 'Tutor',
         required: true
     },
-    enrolled:{
-        type: Number,
-        default: 0
-    },
     startTime:{
         type: Date,
         required: true
