@@ -4,9 +4,7 @@ const Tutee = require('../models/Tutee');
 const twilio = require('twilio')
 const dotenv = require('dotenv');
 dotenv.config({ path: '../config/config.env'});
-let accountSid = process.env.TWILIO_ACCOUNT_SID
-const authToken = process.env.TWILIO_AUTH_TOKEN
-const fromNumber = process.env.TWILIO_FROM
+const { zonedTimeToUtc, utcToZonedTime, format } = require('date-fns-tz')
 const getSessions = async(req, res, next) => {
     const filter = {};
     const options = {};
@@ -29,7 +27,8 @@ const getSessions = async(req, res, next) => {
 
     }
     try {
-        const sessions = await Session.find({}, filter, options);
+        const sessions = await Session.find({}, filter, options)
+        .populate('tutor', 'tutorName')
         res
             .status(200)
             .setHeader('Content-Type', 'application/json')
@@ -39,38 +38,10 @@ const getSessions = async(req, res, next) => {
     }
 }
 
-const addSession = async(req, res, next) => {
-    const tutor = await Tutor.findOne({ _id : req.params.tutorId})
-    try {
-        const session = await Session.create({...req.body, tutorName: tutor._id});
-        const sendTo = tutor.phoneNumber
-        const message_body = `You have made a new session of subject ${session.subject} starting at
-        ${session.startTime} until ${session.endTime}`
-
-        const client = new twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-
-        client.messages.create({
-            body: message_body,
-            to: sendTo,
-            from: process.env.TWILIO_FROM
-        }).then((message) => console.log(message.sid));
-
-        res
-            .status(201)
-            .setHeader('Content-Type', 'application/json')
-            .json(session)
-    } catch (err) {
-        throw new Error(`Error creating session: ${err.message}`);
-    }
-}
-
 const deleteSessions = async(req, res, next) => {
     try {
-        // const deletedSessions = await Session.deleteMany();
-        // const deletedSessionIds = deletedSessions.map(session => session._id);
-        // await Tutee.updateMany({}, { $pull: { enrolledStudents: { $in: deletedSessionIds } } });
-           
         await Session.deleteMany();
+        await Tutor.updateMany({}, { $unset: { sessionsEnrolled: "" } });
         res
             .status(200)
             .setHeader('Content-Type', 'application/json')
@@ -82,7 +53,8 @@ const deleteSessions = async(req, res, next) => {
 
 const getSession = async(req, res, next) => {
     try {
-        const session = await Session.findById(req.params.sessionId);
+        const session = await Session.findById(req.params.sessionId)
+        .populate('tuteesEnrolled', 'tuteeName age gender email');
         res
             .status(200)
             .setHeader('Content-Type', 'application/json')
@@ -121,6 +93,56 @@ const updateSession = async(req, res, next) => {
     }
     
 };
+const addSession = async(req, res, next) => {
+    const tutor = await Tutor.findOne({ _id : req.params.tutorId})
+    try {
+        const utcStart = zonedTimeToUtc(req.body.startTime, 'Asia/Kuala_Lumpur')
+        const utcEnd = zonedTimeToUtc(req.body.endTime, 'Asia/Kuala_Lumpur')
+
+        // const utcStartDate = new Date(utcStart)
+        // const utcEndDate = new Date(utcEnd)
+        // const zonedStart = utcToZonedTime(utcStartDate, 'Asia/Kuala_Lumpur')
+        // const zonedEnd = utcToZonedTime(utcEndDate, 'Asia/Kuala_Lumpur')
+        // console.log(zonedStart)
+        // console.log(zonedEnd)
+
+        const session = await Session.create({...req.body, tutor: tutor._id, startTime: utcStart, endTime: utcEnd});
+        res
+            .status(201)
+            .setHeader('Content-Type', 'application/json')
+            .json(session)
+    } catch (err) {
+        throw new Error(`Error creating session: ${err.message}`);
+    }
+}
+
+// const sendTextMessage = (tutor, session) => {
+//     const sendTo = tutor.phoneNumber
+//     const sendTo2 = '+639061783380'
+
+//     console.log(`SENDING TEXT MESSAGE TO ${sendTo}`)
+
+//     const utcStartDate = new Date(session.startTime)
+//     const utcEndDate = new Date(session.endTime)
+//     const zonedStart = utcToZonedTime(utcStartDate, 'Asia/Kuala_Lumpur')
+//     const zonedEnd = utcToZonedTime(utcEndDate, 'Asia/Kuala_Lumpur')
+    
+//     console.log(process.env.TWILIO_ACCOUNT_SID)
+//     console.log(process.env.TWILIO_AUTH_TOKEN)
+//     console.log(process.env.TWILIO_FROM)
+
+
+//         const client = new twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+//         const message_body = `You have made a new session of subject ${session.subject} starting at
+//         ${zonedStart} until ${zonedEnd}`
+//         console.log(message_body)
+//         console.log(client)
+//         client.messages.create({
+//             body: message_body,
+//             to: sendTo,
+//             from: process.env.TWILIO_FROM
+//         }).then((message) => console.log(message));
+// }
 
 module.exports = {
     getSessions,

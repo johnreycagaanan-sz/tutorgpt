@@ -1,20 +1,21 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const Tutee = require('./Tutee');
+const Tutee = require('./Tutee')
+const Tutor = require('./Tutor')
 
 
 const SessionSchema = new Schema({
-    tutorName: {
-        type: mongoose.Schema.Types.ObjectId,
+    tutor: {
+        type: Schema.Types.ObjectId,
         ref: 'Tutor',
         required: true
     },
     startTime:{
-        type: String,
+        type: Date,
         required: true
     },
     endTime:{
-        type: String,
+        type: Date,
         required: true
     },
     subject:{
@@ -42,4 +43,9 @@ SessionSchema.pre('remove', async function(next) {
     next();
   });
 
+  SessionSchema.post('save', async function(next) {
+    const tutor = await Tutor.findById(this.tutor)
+    tutor.tutorSessions.push(this._id)
+    await tutor.save()
+  });
 module.exports = mongoose.model('Session', SessionSchema);

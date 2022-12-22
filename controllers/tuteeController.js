@@ -5,6 +5,8 @@ const path = require('path');
 const dotenv = require('dotenv');
 dotenv.config({ path: '../config/config.env'});
 const twilio = require('twilio')
+const schedule = require('node-schedule')
+
 
 const sendTokenResponse = (tutee, statusCode, res) => {
     const token = tutee.getSignedJwtToken();
@@ -192,18 +194,7 @@ const getTutee = async(req, res, next) => {
 
 const deleteTutee = async (req, res, next) => {
     try {
-        const { enrolledSessions } = await Tutee.findById(req.params.tuteeId)
-        
-
-        for (let session of enrolledSessions) {
-            const sessionToDeleteForTutee = await Session.findById(session._id)
-            sessionToDeleteForTutee.tuteesEnrolled = 
-            sessionToDeleteForTutee.tuteesEnrolled.map( tutee => !(tutee._id).equals(req.params.tuteeId) )
-            await sessionToDeleteForTutee.save(); 
-        }
-
         await Tutee.findByIdAndDelete(req.params.tuteeId);
-
         res
             .status(200)
             .setHeader('Content-Type', 'application/json')
@@ -244,23 +235,47 @@ const getTuteeSessions = async(req, res, next) => {
 const enroll = async(req, res, next) => {
     try {
         const tutee = await Tutee.findById(req.params.tuteeId);
-        const session = await Session.findById(req.params.sessionId);
+        const session = await Session.findById(req.params.sessionId)
+        .populate('tutor', 'tutorName')
         const index = session.tuteesEnrolled.indexOf(tutee._id);
+        
         if(index !== -1){
             session.tuteesEnrolled.splice(index, 1);
             await Tutee.updateOne({ _id: tutee._id }, { $pull: { sessions: session._id } });
+            const client = new twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+            const message_body = `You have unenrolled from class ${session.subject}`
+            const sendTo = tutee.phoneNumber  
+            client.messages.create({
+            body: message_body,
+            to: sendTo,
+            from: process.env.TWILIO_FROM,
+        }).then((message) => console.log(message.sid));
         }else{
         const client = new twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-        const message_body = `You have a class in ${session.subject} at ${session.startTime}`
+        const message_body = `You have enrolled for a class in ${session.subject} at ${session.startTime}`
+        const scheduled_message_body = `REMINDER:
+        You have an upcoming class in
+        ${session.subject} at 
+        ${session.startTime}`
         const sendTo = tutee.phoneNumber
-        const reminderTime = new Date(session.startTime);
-        reminderTime.setHours(reminderTime.getHours() - 1);
+        const sendTime = new Date(session.startTime);
+        sendTime.setHours(sendTime.getHours() - 1)
+
         client.messages.create({
             body: message_body,
             to: sendTo,
             from: process.env.TWILIO_FROM,
-            schedule: reminderTime.toISOString()
         }).then((message) => console.log(message.sid));
+
+       const j = schedule.scheduleJob(sendTime, function() {
+            client.messages.create({
+              body: scheduled_message_body,
+              from: process.env.TWILIO_FROM,
+              to: sendTo
+          })
+          .then(message => console.log(message.sid))
+          .done();
+  });
 
         session.tuteesEnrolled.push(tutee._id);
         tutee.enrolledSessions.push(session._id);
@@ -270,37 +285,11 @@ const enroll = async(req, res, next) => {
     
         res.status(200).json(session);
       } catch (error) {
-        res.status(500).json({ message: 'Error enrolling tutee in session', error });
+        res.status(500).json(error.message);
       }
     
 }
 
-// const unenroll = async(req,res,next) => {
-//     try {
-//         const tutee = await Tutee.findById(req.params.tuteeId);
-//         const session = await Session.findById(req.params.sessionId);
-//         const indexInTuteesEnrolled = session.tuteesEnrolled.indexOf(tutee._id)
-//         const indexInEnrolledSessions = tutee.enrolledSessions.indexOf(session._id)
-//         if(indexInTuteesEnrolled === -1) {
-//             res
-//                 .status(404)
-//                 .setHeader('Content-Type', 'application/json')
-//                 .json({success: false, msg: 'You are not enrolled in that class'})
-//         } else{
-//         session.tuteesEnrolled.splice(indexInTuteesEnrolled, 1);
-//         tutee.enrolledSessions.splice(indexInEnrolledSessions, 1);
-
-//         await session.save()
-//         await tutee.save()
-//         res
-//             .status(200)
-//             .setHeader('Content-Type', 'application/json')
-//             .json({success:true, msg: 'Unenrolled successfully'})
-//         }
-//     } catch (err) {
-//         throw new Error(`Error deleting sessions: ${err.message}`);
-//     }
-// }
 
 module.exports = {
     getTutees,

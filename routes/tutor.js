@@ -21,7 +21,8 @@ const {
     resetPassword,
     updatePassword,
     deleteTutor,
-    updateTutor
+    updateTutor,
+    getTutorSessions
 } = require('../controllers/tutorController');
 const protectedRouteForTutor = require('../middlewares/authTutor');
 const {adminValidator} = require('../middlewares/utils/validators')
@@ -52,7 +53,7 @@ router.route('/:tutorId')
       .put(reqReceived, protectedRouteForTutor, updateTutor)
 
 router.route('/:tutorId/session')
-      .get(reqReceived, getSessions)
+      .get(reqReceived, getTutorSessions)
       .post(reqReceived, protectedRouteForTutor, addSession)
       .delete(reqReceived, protectedRouteForTutor, deleteSessions)
 

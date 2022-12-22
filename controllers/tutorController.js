@@ -1,6 +1,8 @@
 const Tutor = require('../models/Tutor');
 const crypto = require('crypto');
 const path = require('path');
+const Session = require('../models/Session');
+
 
 const sendTokenResponse = (tutor, statusCode, res) => {
     const token = tutor.getSignedJwtToken();
@@ -122,7 +124,8 @@ const getTutors = async(req, res, next) => {
 
     }
     try {
-        const tutors = await Tutor.find({}, filter, options);
+        const tutors = await Tutor.find({}, filter, options)
+        .populate('tutorSessions', 'startTime endTime subject');
         res
             .status(200)
             .setHeader('Content-Type', 'application/json')
@@ -160,7 +163,8 @@ const deleteTutors = async (req, res, next) => {
 
 const getTutor = async(req, res, next) => {
     try {
-        const tutor = await Tutor.findById(req.params.tutorId);
+        const tutor = await Tutor.findById(req.params.tutorId)
+        .populate('tutorSessions');
         res
             .status(200)
             .setHeader('Content-Type', 'application/json')
@@ -191,6 +195,7 @@ const updateTutor = async(req, res, next) => {
         },{
             new: true
         });
+        console.log(tutor)
         res
             .status(200)
             .setHeader('Content-Type', 'application/json')
@@ -203,10 +208,12 @@ const updateTutor = async(req, res, next) => {
 
 const getTutorSessions = async(req, res, next) => {
     try {
-        const tutor = await Tutor.findById(req.params.tutorId).populate('tutorSessions');
-        const tutorSessions = tutor.tutorSessions
+        const tutor = await Tutor.findById(req.params.tutorId)
+        // const tutorSessions = tutor.tutorSessions
+        // console.log(`${tutor.tutorName}'s sessions are: ${tutorSessions}`)
+        const sessions = await Session.find({tutorName: tutor})
     
-        res.status(200).json(tutorSessions);
+        res.status(200).json(sessions);
       } catch (error) {
         res.status(500).json({ message: `Error retrieving sessions for: ${tutor.tutorName}`, error });
       }
