@@ -122,3 +122,6 @@ the process to be done remotely
 ## Contact
 Created by John Rey Caga-anan https://github.com/johnreycagaanan-sz
 Feel free to contact me for any questions
+
+## License
+[Click to view](https://github.comjohnreycagaanan-sz/tutorgpt/blob/master/LICENSE)
