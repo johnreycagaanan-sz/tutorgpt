@@ -43,6 +43,7 @@ To try out this project:
   $ npx nodemon server (note that you must install the nodemon package first)
   
 ## Code Examples
+```javascript
 //to enroll /unenroll
 //Route: POST/tutee/{tuteeId}/session/{sessionId}
 
@@ -102,7 +103,7 @@ const enroll = async(req, res, next) => {
       }
     
 }
-
+```
 ## Features
 -A backend application using backend technologies like: MongoDB, Express, React, and Node.js
 -Authorization and authentication implemented with JWT and Bcrypt
