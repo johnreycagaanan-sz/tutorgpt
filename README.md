@@ -9,6 +9,7 @@
 * [Features](#features)
 * [Inspiration](#inspiration)
 * [Contact](#contact)
+* [License](#license)
 
 ## General Info
 
