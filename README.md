@@ -3,6 +3,7 @@
 
 ## Table of Contents
 * [General Info](#general-info)
+* [Project Video](#project-video)
 * [Technologies Used](#technologies-used)
 * [Setup](#setup)
 * [Features](#features)
@@ -13,6 +14,9 @@
 
 TutorGPT is a backend tool for tutors to sign up and add a tutorial session. Tutees can then also signup and enroll/unenroll
 to that session
+
+## Project Video
+[Click to view demo of TutorGPT](https://drive.google.com/file/d/1NmLYRTJUdPQMqIEUHg6J5r1WDHLkrXJp/view)
 
 ## Technologies Used
 * Node.js - version 18.12.1
